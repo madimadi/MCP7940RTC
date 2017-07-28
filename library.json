@@ -1,0 +1,26 @@
+{
+  "name": "MCP7940RTC",
+  "keywords": "RTC, i2c",
+  "description": "Basic RTC library for Microchip MCP7940N",
+  "repository":
+  {
+    "type": "git",
+    "url": "https://github.com/jrbenito/MCP7940RTC.git"
+  },
+  "authors":
+  [
+    {
+      "name": "Rick",
+      "email": "",
+      "url": "http://www.anarduino.com"
+    }
+  ],
+  "dependencies":
+  {
+    "name": "Time",
+    "authors": "Paul Stoffregen",
+    "frameworks": "arduino"
+  },
+  "frameworks": "Arduino",
+  "platforms": "atmelavr"
+}
