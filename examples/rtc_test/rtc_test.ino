@@ -14,6 +14,7 @@
 #include <Time.h>
 #include <Wire.h>
 #include <MCP7940RTC.h>
+#include <LowPower.h>                 //get it here: https://github.com/lowpowerlab/lowpower
 #define RTC_INT 3                     // arduino hardware interrupt pin, (i.e, D3 for miniWireless)
 
 char buf[32];
@@ -57,7 +58,8 @@ void loop() {
     tt = now() + nextIntr +1; // we add a second to account for latency throughout...
     pRTC->setAlarm0(tt);  // set new alarm increasingly further out in time.
   }
-  delay(20);  
+  // delay(20); 
+  LowPower.powerDown(SLEEP_FOREVER, ADC_OFF, BOD_OFF);
 }
 
 void rtcIntr() {  // interrupt service routine, just set flag
