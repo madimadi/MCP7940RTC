@@ -39,7 +39,7 @@ void setup() {
   setTime(11,32,10,23,12,2013);       // Set current Anarduino date/time to same as what we've just sent to RTC
   tt = now() + 10;                    // setup time_t to 10-seconds in future
   pRTC->setAlarm0(tt);                // set alarm in 10-sec
-  attachInterrupt(1,rtcIntr,FALLING);
+  attachInterrupt(digitalPinToInterrupt (RTC_INT),rtcIntr,FALLING); // 3  External Interrupt Request 1  (pin D3)          (INT1_vect)
   Serial.print("tt=");
   Serial.println(tt);
 }
