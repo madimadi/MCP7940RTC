@@ -35,7 +35,7 @@
  *       
  */
 #include "Arduino.h"
-#include <Time.h>
+#include <TimeLib.h>		// replaced ancient Time.h
 #include <Wire.h>
 #include "MCP7940RTC.h"
 typedef uint8_t byte;
