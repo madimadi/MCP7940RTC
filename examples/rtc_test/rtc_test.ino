@@ -20,7 +20,6 @@
 char buf[32];
 MCP7940RTC *pRTC;    // setup rtc pointer
 time_t tt;
-int gotInterrupt=0;
 int nextIntr=5;
 char *p;
 
@@ -46,7 +45,10 @@ void setup() {
 }
 
 void loop() {
-  if(gotInterrupt>0) {
+  rtcIntr()  
+}
+
+void rtcIntr() { 
     nextIntr *= 2;
     p = &buf[0];
     pRTC->getDateStr(p);  
@@ -54,16 +56,11 @@ void loop() {
     Serial.print("Got Interrupt, next interrupt in ");
     Serial.print(nextIntr);
     Serial.println(" sec.");
-    gotInterrupt=0;  // reset flag    
     tt = now() + nextIntr +1; // we add a second to account for latency throughout...
     pRTC->setAlarm0(tt);  // set new alarm increasingly further out in time.
-  }
-  // delay(20); 
-  LowPower.powerDown(SLEEP_FOREVER, ADC_OFF, BOD_OFF);
-}
-
-void rtcIntr() {  // interrupt service routine, just set flag
-  gotInterrupt=1;
+ 
+    LowPower.powerDown(SLEEP_FOREVER, ADC_OFF, BOD_OFF); // Wake up only on alarm
+ 
 }
 
 void setNewTimeRTC(int yr, int mo, int dy, int hr, int mn, int sec) {
