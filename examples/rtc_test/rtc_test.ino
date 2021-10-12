@@ -11,15 +11,15 @@
  *
 */ 
  
-#include <Time.h>
+#include <TimeLib.h>
 #include <Wire.h>
 #include <MCP7940RTC.h>
+#include <LowPower.h>                 //get it here: https://github.com/lowpowerlab/lowpower
 #define RTC_INT 3                     // arduino hardware interrupt pin, (i.e, D3 for miniWireless)
 
 char buf[32];
 MCP7940RTC *pRTC;    // setup rtc pointer
 time_t tt;
-int gotInterrupt=0;
 int nextIntr=5;
 char *p;
 
@@ -31,21 +31,21 @@ void setup() {
   delay(20);
   
   pRTC = new MCP7940RTC();            // initialize rtc pointer
-  setNewTimeRTC(2013, 12, 23, 11, 32, 10);  // Set RTC time, (year, month, day, hour, minute, second)
+  setNewTimeRTC(2000, 01, 01, 00, 00, 00);  // Set RTC time, (year, month, day, hour, minute, second)
   p = &buf[0];
   pRTC->getDateStr(p);  
   Serial.println(p);                  // Print current date, utc-seconds.
   
-  setTime(11,32,10,23,12,2013);       // Set current Anarduino date/time to same as what we've just sent to RTC
+  setTime(00,00,00,01,01,2000);       // Set current Anarduino date/time to same as what we've just sent to RTC
   tt = now() + 10;                    // setup time_t to 10-seconds in future
   pRTC->setAlarm0(tt);                // set alarm in 10-sec
-  attachInterrupt(1,rtcIntr,FALLING);
+  attachInterrupt(digitalPinToInterrupt (RTC_INT),rtcIntr,FALLING); // 3  External Interrupt Request 1  (pin D3)          (INT1_vect)
   Serial.print("tt=");
   Serial.println(tt);
 }
 
 void loop() {
-  if(gotInterrupt>0) {
+ 
     nextIntr *= 2;
     p = &buf[0];
     pRTC->getDateStr(p);  
@@ -53,15 +53,14 @@ void loop() {
     Serial.print("Got Interrupt, next interrupt in ");
     Serial.print(nextIntr);
     Serial.println(" sec.");
-    gotInterrupt=0;  // reset flag    
     tt = now() + nextIntr +1; // we add a second to account for latency throughout...
     pRTC->setAlarm0(tt);  // set new alarm increasingly further out in time.
-  }
-  delay(20);  
+    
+    LowPower.powerDown(SLEEP_FOREVER, ADC_OFF, BOD_OFF); // Wake up only on alarm 
 }
 
-void rtcIntr() {  // interrupt service routine, just set flag
-  gotInterrupt=1;
+void rtcIntr() { 
+  // loop wakes up and progress right after SLEEP_FOREVER 
 }
 
 void setNewTimeRTC(int yr, int mo, int dy, int hr, int mn, int sec) {
@@ -75,4 +74,3 @@ void setNewTimeRTC(int yr, int mo, int dy, int hr, int mn, int sec) {
   time_t t = makeTime(tm1);
   pRTC->setTimeRTC(t);
 }
-
