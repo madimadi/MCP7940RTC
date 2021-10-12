@@ -45,7 +45,7 @@ void setup() {
 }
 
 void loop() {
-  rtcIntr()  
+  rtcIntr();
 }
 
 void rtcIntr() { 
